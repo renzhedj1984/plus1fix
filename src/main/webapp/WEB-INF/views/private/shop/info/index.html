@@ -1,0 +1,355 @@
+<%
+layout("/layouts/private.html"){
+%>
+
+<form id="addForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
+      action="${base}/private/cms/site/editDo" method="post">
+    <input name="id" id="id" value="${obj.id!}" type="hidden">
+    <header class="header navbar bg-white shadow">
+        <div class="pull-right">
+            <div class="btn-group tool-button">
+                <button class="btn btn-primary navbar-btn" type="button" id="save"> 保存</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="content-wrap">
+        <div class="wrapper" style="min-height:500px;height: 100%;">
+            <div class="box-tab">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#info" data-toggle="tab">我的店铺</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade active in" id="info">
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label for="site_name" class="col-sm-2 control-label">店铺名称</label>
+
+                                <div class="col-sm-8">
+                                    <input type="text" id="companyName" class="form-control" name="companyName" data-parsley-required="true"
+                                           value="${obj.companyName!}" placeholder="店铺名称">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="site_domain" class="col-sm-2 control-label">手机号</label>
+
+                                <div class="col-sm-8">
+                                    <input type="text" id="phone" class="form-control" name="phone"
+                                           value="${obj.phone!}" placeholder="+86 手机号">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="email" class="col-sm-2 control-label">公司邮箱</label>
+
+                                <div class="col-sm-8">
+                                    <input type="text" id="email" class="form-control" name="email"
+                                           value="${obj.email!}" placeholder="公司邮箱">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="email" class="col-sm-2 control-label">公司地址</label>
+
+                                <div class="col-sm-8">
+                                    <input type="text" id="address" class="form-control" name="address"
+                                           value="${obj.address!}" placeholder="公司地址">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="email" class="col-sm-2 control-label">一周经营</label>
+                                <div class="col-sm-4">
+	                                <select id="type" name="type" class="form-control">
+	                                    <option value="1" selected="selected">周一</option>
+	                                </select>
+	                            </div>
+	                            <div class="col-sm-4">
+	                                <select id="type" name="type" class="form-control">
+	                                    <option value="5">周五</option>
+	                                    <option value="6">周六</option>
+	                                    <option value="7">周日</option>
+	                                </select>
+	                            </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="endTime" class="col-sm-2 control-label">时间段</label>
+                                <div class="col-sm-8">
+                                	<div class="col-sm-4 input-group date form_datetime " data-date="1979-09-16T05:25:07Z" data-date-format="HH:ii" data-link-field="startTime">
+	                                    <input type="text" size="6" readonly class="form-control" value="" data-parsley-required="true">
+	                                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+	                                    <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+	                                </div>
+	                                <div class="col-sm-4 input-group date form_datetime " data-date="1979-09-16T05:25:07Z" data-date-format="HH:ii" data-link-field="endTime">
+	                                    <input type="text" size="6" readonly class="form-control" value="" data-parsley-required="true">
+	                                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+	                                    <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+	                                </div>
+	                                <input type="hidden" id="startTime" name="startTime" value="" />
+	                                <input type="hidden" id="endTime" name="endTime" value="" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="site_logo" class="col-sm-2 control-label">Logo图片</label>
+
+                                <div class="col-sm-8">
+                                    <div id="queue"></div>
+                                    <div>
+                                        <input id="file_upload" name="file_upload" type="file" multiple="false">
+                                    </div>
+                                    <div id="img" style="padding: 5px;">
+                                        <%if(!isEmpty(obj.site_logo)){%>
+                                        <img src='${obj.site_logo!}' style='width:150px;'>
+                                        <i class="fa fa-close" onclick="$('#site_logo').val('');$('#img').html('');"></i>
+                                        <%}%>
+                                    </div>
+                                    <input type="hidden" id="site_logo" name="site_logo" value="${obj.site_logo!}" >
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="site_logo" class="col-sm-2 control-label">营业执照</label>
+
+                                <div class="col-sm-8">
+                                    <div id="queue"></div>
+                                    <div>
+                                        <input id="file_upload" name="file_upload" type="file" multiple="false">
+                                    </div>
+                                    <div id="img" style="padding: 5px;">
+                                        <%if(!isEmpty(obj.site_logo)){%>
+                                        <img src='${obj.site_logo!}' style='width:150px;'>
+                                        <i class="fa fa-close" onclick="$('#site_logo').val('');$('#img').html('');"></i>
+                                        <%}%>
+                                    </div>
+                                    <input type="hidden" id="site_logo" name="site_logo" value="${obj.site_logo!}" >
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="disabled" class="col-sm-2 control-label">节假日营业</label>
+                                <div class="col-sm-8 switcha">
+                                    <div class="mr15">
+                                        <input type="checkbox" id="isRecommend" name="isRecommend" class="js-switch-blue" value="true" >
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="disabled" class="col-sm-2 control-label">上门维修</label>
+                                <div class="col-sm-8 switcha">
+                                    <div class="mr15">
+                                        <input type="checkbox" id="isHot" name="isHot" class="js-switch-blue" value="true" >
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="disabled" class="col-sm-2 control-label">是否预约</label>
+                                <div class="col-sm-8 switcha">
+                                    <div class="mr15">
+                                        <input type="checkbox" id="isShow" name="isShow" class="js-switch-blue" value="true" >
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="email" class="col-sm-2 control-label">连锁认证</label>
+
+                                <div class="col-sm-8">
+                                    <input type="text" id="address" class="form-control" name="address"
+                                           value="${obj.address!}" placeholder="连锁代码">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="footer_content" class="col-sm-2 control-label">公司简介</label>
+
+                                <div class="col-sm-8">
+                                    <textarea id="footer_content" name="footer_content" class="form-control" style="width:100%;height:150px;">${obj.footer_content!}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script language="JavaScript">
+    function clearFile() {
+        $("#img").html("");
+        $("#queue").html("");
+        $("#site_logo").val("");
+    }
+    function clearWapFile() {
+        $("#img_wap").html("");
+        $("#wap_queue").html("");
+        $("#site_wap_logo").val("");
+    }
+    function clearFile_weibo() {
+        $("#img_weibo").html("");
+        $("#queue_weibo").html("");
+        $("#weibo_qrcode").val("");
+    }
+    function clearFile_wechat() {
+        $("#img_wechat").html("");
+        $("#queue_wechat").html("");
+        $("#wechat_qrcode").val("");
+    }
+    $(document).ready(function () {
+    	myForm.init();
+    	$('.form_datetime').datetimepicker({
+            language:  'zh-CN',
+            format:'hh:ii',
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 0,
+            forceParse: 0,
+            showMeridian: 1
+        });
+        $('#file_upload').uploadifive({
+            'auto': true,
+            'multi': false,
+            'width': '100%',
+            'height': '35',
+            'buttonText': '请选择图片',
+            'fileType': 'image/*',
+            'fileSizeLimit': 1024,
+            'queueSizeLimit': 1,
+            'formData': {},
+            'queueID': 'queue',
+            'uploadScript': '${base}/open/file/upload/image',
+            'onUploadComplete': function (file, data) {
+                data = JSON.parse(data);
+                if (data.code == 0) {
+                    Toast.success(data.msg);
+                    $("#img").html("<img src='" + data.data + "' style='width:150px;'>");
+                    $("#site_logo").val(data.data);
+                } else {
+                    clearFile();
+                    Toast.error(data.msg);
+                }
+            },
+            'onDrop': function (file, fileDropCount) {
+                clearFile();
+            },
+            'onClearQueue': function (queue) {
+                clearFile();
+            },
+            'onCancel': function () {
+                clearFile();
+            }
+        });
+        $('#wap_file_upload').uploadifive({
+            'auto': true,
+            'multi': false,
+            'width': '100%',
+            'height': '35',
+            'buttonText': '请选择图片',
+            'fileType': 'image/*',
+            'fileSizeLimit': 1024,
+            'queueSizeLimit': 1,
+            'formData': {},
+            'queueID': 'wap_queue',
+            'uploadScript': '${base}/open/file/upload/image',
+            'onUploadComplete': function (file, data) {
+                data = JSON.parse(data);
+                if (data.code == 0) {
+                    Toast.success(data.msg);
+                    $("#img_wap").html("<img src='" + data.data + "' style='width:150px;'>");
+                    $("#site_wap_logo").val(data.data);
+                } else {
+                    clearWapFile();
+                    Toast.error(data.msg);
+                }
+            },
+            'onDrop': function (file, fileDropCount) {
+                clearWapFile();
+            },
+            'onClearQueue': function (queue) {
+                clearWapFile();
+            },
+            'onCancel': function () {
+                clearWapFile();
+            }
+        });
+        $('#file_upload_weibo').uploadifive({
+            'auto': true,
+            'multi': false,
+            'width': '100%',
+            'height': '35',
+            'buttonText': '请选择图片',
+            'fileType': 'image/*',
+            'fileSizeLimit': 1024,
+            'queueSizeLimit': 1,
+            'formData': {},
+            'queueID': 'queue_weibo',
+            'uploadScript': '${base}/open/file/upload/image',
+            'onUploadComplete': function (file, data) {
+                data = JSON.parse(data);
+                if (data.code == 0) {
+                    Toast.success(data.msg);
+                    $("#img_weibo").html("<img src='" + data.data + "' style='width:150px;height:95px;'>");
+                    $("#weibo_qrcode").val(data.data);
+                } else {
+                    clearFile_weibo();
+                    Toast.error(data.msg);
+                }
+            },
+            'onDrop': function (file, fileDropCount) {
+                clearFile_weibo();
+            },
+            'onClearQueue': function (queue) {
+                clearFile_weibo();
+            },
+            'onCancel': function () {
+                clearFile_weibo();
+            }
+        });
+        $('#file_upload_wechat').uploadifive({
+            'auto': true,
+            'multi': false,
+            'width': '100%',
+            'height': '35',
+            'buttonText': '请选择图片',
+            'fileType': 'image/*',
+            'fileSizeLimit': 1024,
+            'queueSizeLimit': 1,
+            'formData': {},
+            'queueID': 'queue_wechat',
+            'uploadScript': '${base}/open/file/upload/image',
+            'onUploadComplete': function (file, data) {
+                data = JSON.parse(data);
+                if (data.code == 0) {
+                    Toast.success(data.msg);
+                    $("#img_wechat").html("<img src='" + data.data + "' style='width:150px;height:95px;'>");
+                    $("#wechat_qrcode").val(data.data);
+                } else {
+                    clearFile_wechat();
+                    Toast.error(data.msg);
+                }
+            },
+            'onDrop': function (file, fileDropCount) {
+                clearFile_wechat();
+            },
+            'onClearQueue': function (queue) {
+                clearFile_wechat();
+            },
+            'onCancel': function () {
+                clearFile_wechat();
+            }
+        });
+        $("#save").on("click",function(){
+//      $("#footer_content").val(ue.getContent());
+            $('#addForm').submit();
+        });
+        $('#addForm').ajaxForm({
+            dataType: 'json',
+            beforeSubmit: function (arr, form, options) {
+                sublime.showLoadingbar($(".main-content"));
+            },
+            success: function (data, statusText, xhr, form) {
+                if (data.code == 0) {
+                    Toast.success(data.msg);
+                } else {
+                    Toast.error(data.msg);
+                }
+                sublime.closeLoadingbar($(".main-content"));
+            }
+        });
+    });
+</script>
+
+<%}%>

@@ -1,0 +1,188 @@
+<%
+layout("/layouts/private.html"){
+%>
+<header class="header navbar bg-white shadow">
+    <a href="${base}/private/plus1fix/comment/index/${flag!}" data-pjax id="_reload"></a>
+    <div class="btn-group" style="padding-top: 5px;">
+        <div >
+            <select id="flag" name="flag" class="form-control">
+            	<option selected="selected" value="1">正常</option>
+            	<option value="2">回收站</option>
+            </select>
+        </div>
+    </div>
+    <div class="pull-right">
+        <button class="btn btn-primary navbar-btn" onclick="sublime.toggleFilter('.cd-panel')"><i
+                class="fa fa-sliders"></i> 筛选
+        </button>
+    </div>
+</header>
+<div class=panel-body style="padding-top: 50px;">
+    <div class="table-responsive no-border">
+        <input id="unitid" type="hidden">
+        <table class="table table-bordered table-striped mg-t datatable">
+            <thead>
+            <tr>
+            	<th>顾客账号</th>
+                <th>服务(评分)</th>
+                <th>速度(评分)</th>
+                <th>技能(评分)</th>
+                <th>价格(评分)</th>
+                <th>总体(评分)</th>
+                <th>类型</th>
+                <th>评论时间</th>
+                <th>操作</th>
+        </table>
+    </div>
+</div>
+<div class="cd-panel from-right">
+    <header class="cd-panel-header">
+        <h4>高级筛选</h4>
+    </header>
+    <div class="cd-panel-container">
+        <div class="cd-panel-content shadow">
+            <div class="form-group">
+            	<label for="customerAccount">顾客账号</label>
+                <input type="text" id="customerAccount" name="customerAccount" onclick="this.value=''" class="form-control" placeholder="顾客账号">
+            </div>
+            <button id="searchBtn" type="button" class="btn btn-default">查询</button>
+        </div>
+    </div>
+</div>
+<div id="dialog" class="modal fade bs-modal" tabindex="-3" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        	
+        </div>
+    </div>
+</div>
+<div id="dialogOpt" class="modal fade bs-modal-sm" tabindex="-2" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">操作提示</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        确定执行该操作？ <br/>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="ok" type="button" class="btn btn-primary" data-loading-text=执行中...">确 定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script language="JavaScript">
+    var datatable;
+    function initDatatable() {
+        datatable = $('.datatable').DataTable({
+            "dom": '<"toolbar">frtip',
+            "searching": false,
+            "processing": false,
+            "serverSide": true,
+            "select": true,
+            "ordering": true,
+            "language": {
+                "url": "${base}/assets/plugins/datatables/cn.json"
+            },
+            "preDrawCallback": function () {
+                sublime.showLoadingbar($(".main-content"));
+            },
+            "drawCallback": function () {
+                sublime.closeLoadingbar($(".main-content"));
+            },
+            "ajax": {
+                "url": "${base}/private/plus1fix/comment/list/",
+                "type": "post",
+                "data": function (d) {
+                	d.customerAccount = $('#customerAccount').val();
+                	d.flag = $('#flag').val();
+                }
+            },
+            "order": [[0, "asc"]],
+            "columns": [
+				{"data": "customerAccount", "bSortable": true},
+                {"data": "serviceScore", "bSortable": true},
+                {"data": "speedScore", "bSortable": true},
+                {"data": "skillScore", "bSortable": true},
+                {"data": "priceScore", "bSortable": true},
+                {"data": "totalScore", "bSortable": true},
+                {"data": "typeFlag", "bSortable": true},
+                {"data": "createTime", "bSortable": true}
+            ],
+            "columnDefs": [
+                {
+                    "render": function (data, type, row) {
+                        return (new Date(data)).format("yyyy-MM-dd hh:mm:ss");
+                    },
+                    "targets": 7
+                },
+                {
+                    "render": function (data, type, row) {
+                        return data==1?'首评':'追评';
+                    },
+                    "targets": 6
+                },
+                {
+                    "render": function (data, type, row) {
+                        var html='<div class="btn-group"><button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">' +
+                               '<i class="ti-settings"></i> <span class="ti-angle-down"></span></button>';
+                        html+= '<ul class="dropdown-menu" role="menu">';
+                        html+= '<li><a href="${base}/private/plus1fix/comment/detail/' + row.id + '"  data-toggle="modal" data-target="#dialog">详情</a></li>';
+                        if(${flag!}==1){
+                        	html+= '<li><a href="javascript:;" onclick="opt(\'delete\',\'' + row.id + '\')">删除</a></li>';
+                        }
+                        if(${flag!}==2){
+                        	html+= '<li><a href="javascript:;" onclick="opt(\'recover\',\'' + row.id + '\')">恢复</a></li>';
+                        }
+                        html+= '</ul></div>';
+                        return html;
+                    },
+                    "targets": 8
+                }
+           ]
+        });
+        $("#searchBtn").on('click', function () {
+            datatable.ajax.reload();
+        });
+    }
+    
+    $(function () {
+        initDatatable();
+        $("#flag").find("option[value='${flag!}']").attr("selected",true);
+        $("#flag").on("change",function(){
+        	$("#_reload").attr("href","${base}/private/plus1fix/comment/index/"+$(this).val());
+            $("#_reload").trigger("click");
+        });
+        $("#dialog").on("hidden.bs.modal", function() {
+            $(this).removeData("bs.modal");
+        });
+    });
+    
+    function opt(type,id){
+    	var dialog = $("#dialogOpt");
+        dialog.modal("show");
+        dialog.find("#ok").unbind("click");
+        dialog.find("#ok").bind("click", function(event){
+            var btn = $(this);
+            btn.button("loading");
+            $.post("${base}/private/plus1fix/comment/"+type+"/"+id,{},function(data){
+                //重置按钮状态，关闭提示框
+                dialog.modal("hide");
+                if(data.code==0){
+                    Toast.success(data.msg);
+                    datatable.ajax.reload();
+                }else{
+                    Toast.error(data.msg);
+                }
+                btn.button("reset");
+            },"json");
+        });
+    }
+</script>
+
+<%}%>

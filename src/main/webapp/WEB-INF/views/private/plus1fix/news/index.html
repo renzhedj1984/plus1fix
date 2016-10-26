@@ -1,0 +1,333 @@
+<%
+layout("/layouts/private.html"){
+%>
+<section class="content-wrap bg-white">
+    <header class="header navbar bg-white shadow">
+    	<a href="${base}/private/plus1fix/news/index/${flag!}" data-pjax id="_reload"></a>
+    	<div class="btn-group">
+	        <div >
+	            <select id="flag" class="form-control">
+	            	<option selected="selected" value="1">正常</option>
+	            	<option value="2">回收站</option>
+	            </select>
+	        </div>
+	    </div>
+        <div class="btn-group tool-button">
+            <a class="btn btn-primary navbar-btn" href="${base}/private/plus1fix/news/add" data-pjax id="addLink"><i class="ti-plus"></i> 添加文章</a>
+            <button class="btn btn-danger navbar-btn" onclick="del()"><i class="ti-close"></i> 删除文章</button>
+        </div>
+        <div class="pull-right offscreen-right">
+            <button class="btn btn-primary navbar-btn" onclick="sublime.toggleFilter('.cd-panel')"><i
+                    class="fa fa-sliders"></i> 筛选
+            </button>
+        </div>
+    </header>
+    <div class=panel-body style="padding-top: 50px;">
+        <div class="table-responsive no-border">
+            <input id="channelId" type="hidden">
+            <table class="table table-bordered table-striped mg-t datatable">
+                <thead>
+                <tr>
+                    <th>标题</th>
+                    <th>简介</th>
+                    <th>大图</th>
+                    <th>小图</th>
+                    <th>作者</th>
+                    <th>推荐</th>
+                    <th>热门</th>
+                    <th>显示</th>
+                    <th>位置</th>
+                    <th>浏览</th>
+                    <th>发布时间</th>
+                    <th>操作</th>
+            </table>
+        </div>
+    </div>
+</section>
+<div class="cd-panel from-right">
+    <header class="cd-panel-header">
+        <h4>高级筛选</h4>
+        <a href="javascript:;" class="cd-panel-close text-center"><i class="ti-close"></i> </a>
+    </header>
+    <div class="cd-panel-container">
+        <div class="cd-panel-content shadow">
+            <div class="form-group" data-date="1979-09-16T05:25:07Z" data-date-format="dd MM yyyy - HH:ii p" data-link-field="startTime">
+                <label for="title">文章标题</label>
+                <input type="text" id="title" name="title" class="form-control" placeholder="文章标题" autofocus>
+                <label for="author">作者</label>
+                <input type="text" id="author" name="author" class="form-control" placeholder="作者">
+            </div>
+            <button id="searchBtn" type="button" class="btn btn-default">查询</button>
+        </div>
+    </div>
+</div>
+<!-- 删除 -->
+<div id="dialogDelete" class="modal fade bs-modal-sm" tabindex="-2" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">删除文章</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        确定删除吗？ <br/>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                <button id="ok" type="button" class="btn btn-primary" data-loading-text="正在删除...">确 定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 详情 -->
+<div id="dialogDetail" class="modal fade bs-modal-sm" tabindex="-3" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+<script language="JavaScript">
+    var datatable;
+    function initDatatable() {
+        datatable = $('.datatable').DataTable({
+            "dom": '<"toolbar">frtip',
+            "searching":false,
+            "processing": false,
+            "serverSide": true,
+            "select": true,
+            "ordering": true,
+            "language": {
+                "url": "${base}/assets/plugins/datatables/cn.json"
+            },
+            "preDrawCallback": function () {
+                sublime.showLoadingbar($(".main-content"));
+            },
+            "drawCallback": function () {
+                sublime.closeLoadingbar($(".main-content"));
+            },
+            "ajax": {
+                "url": "${base}/private/plus1fix/news/list",
+                "type": "post",
+                "data": function (d) {
+                	d.flag = $('#flag').val();
+                    d.title = $('#title').val();
+                    d.author = $('#author').val();
+                }
+            },
+            "order": [[0, "desc"]],
+            "columns": [
+                {"data": "title", "bSortable": true},
+                {"data": "shortDesc", "bSortable": true},
+                {"data": "bigImgPath", "bSortable": false},
+                {"data": "smallImgPath", "bSortable": false},
+                {"data": "author", "bSortable": true},
+                {"data": "isRecommend", "bSortable": true},
+                {"data": "isHot", "bSortable": true},
+                {"data": "isShow", "bSortable": true},
+                {"data": "showIndex", "bSortable": true},
+                {"data": "vist", "bSortable": true},
+                {"data": "publishTime", "bSortable": true},
+            ],
+            "columnDefs": [
+				{
+				    "render": function (data, type, row) {
+				    	if(data!=''){
+                    		return '<a href="javascript:showImg(\''+data+'\');">查看</a>';
+                    	}else{
+                    		return '';
+                    	}
+				    },
+				    "targets": 2
+				},
+				{
+                    "render": function (data, type, row) {
+                    	if(data!=''){
+                    		return '<a href="javascript:showImg(\''+data+'\');">查看</a>';
+                    	}else{
+                    		return '';
+                    	}
+                    },
+                    "targets": 3
+                },
+                {
+                    "render": function (data, type, row) {
+                        if (!data) {
+                            return '<i id="recommend_' + row.id + '" class="fa fa-circle text-success ml5"></i>';
+                        } else {
+                            return '<i id="recommend_' + row.id + '" class="fa fa-circle text-danger ml5"></i>';
+                        }
+                    },
+                    "targets": 5
+                },
+                {
+                    "render": function (data, type, row) {
+                        if (!data) {
+                            return '<i id="hot_' + row.id + '" class="fa fa-circle text-success ml5"></i>';
+                        } else {
+                            return '<i id="hot_' + row.id + '" class="fa fa-circle text-danger ml5"></i>';
+                        }
+                    },
+                    "targets": 6
+                },
+                {
+                    "render": function (data, type, row) {
+                        if (!data) {
+                            return '<i id="show_' + row.id + '" class="fa fa-circle text-success ml5"></i>';
+                        } else {
+                            return '<i id="show_' + row.id + '" class="fa fa-circle text-danger ml5"></i>';
+                        }
+                    },
+                    "targets": 7
+                },
+                {
+                    "render": function (data, type, row) {
+                        if (data) {
+                            return moment(parseInt(data)).format("YYYY-MM-DD HH:mm:ss");
+                        }
+                        return '';
+                    },
+                    "targets": 10
+                },
+                {
+                    "render": function (data, type, row) {
+                        var html = '<div class="btn-group"><button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">';
+                        html+= ' <i class="ti-settings"></i> <span class="ti-angle-down"></span></button><ul class="dropdown-menu" role="menu">';
+                        html+= '<li><a href="${base}/private/plus1fix/news/edit/' + row.id + '" data-pjax>修改</a></li>' ;
+                        if(row.delFlag){
+                        	html+= '<li><a href="javascript:;" onclick="recover(\'' + row.id + '\')">恢复</a></li>' ;
+                        }else{
+                        	html+= '<li><a href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a></li>' ;
+                        }
+                        html+= '<li class="divider"></li>';
+                        html+= '<li><a href="javascript:;" onclick="show('+!row.isShow+',\'' + row.id + '\')">'+(row.isShow?'取消显示':'显示')+'</a></li>' ;
+                        html+= '<li><a href="javascript:;" onclick="recommend('+!row.isRecommend+',\'' + row.id + '\')">'+(row.isRecommend?'取消推荐':'推荐')+'</a></li>' ;
+                        html+= '<li class="divider"></li>';
+                        html+= '<li><a href="javascript:;" onclick="hot('+!row.isHot+',\'' + row.id + '\')">'+(row.isHot?'取消热门':'热门')+'</a></li>' ;
+                        html+= '</ul></div>';
+                        return html;
+                    },
+                    "targets": 11
+                }
+            ]
+        });
+        datatable.on('click', 'tr', function () {
+            $(this).toggleClass('selected');
+        });
+        $("#searchBtn").on('click', function () {
+            datatable.ajax.reload();
+        });
+    }
+    
+    function showImg(path){
+        var dialog = $("#dialogDetail");
+        var path = $(this).attr('path');
+        dialog.modal("show");
+        var html = '<div class="modal-header">';
+        html += '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>';
+        html += '<h4 class="modal-title">经营许可证</h4>';
+        html += '</div>';
+        html += '<div class="modal-body">';
+        html += '<div class="row">';
+        html += '<div class="col-xs-12">';
+        html += '<img src="http://www.nh87.cn/uploads/1606/1mist00110pl-lp.jpg"/>';
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+        html += '<div class="modal-footer">';
+        html += '<button type="button" class="btn btn-primary btn-block" data-dismiss="modal">知道了</button>';
+        html += '</div>';
+        $('.modal-content').html(html);
+    }
+    
+    function del(id) {
+    	var ids = [];
+    	if(id){
+    		ids.push(id);
+    	}else{
+    		var rows = datatable.rows('.selected').data();
+    		if (rows.length > 0) {
+                $.each(datatable.rows('.selected').data(), function (i, n) {
+                    ids.push(n.id);
+                });
+        	} else {
+                Toast.warning("请先选择要删除的文章！");
+                return;
+            }
+    	}
+    	var dialog = $("#dialogDelete");
+        dialog.modal("show");
+        dialog.find("#ok").unbind("click");
+        dialog.find("#ok").bind("click", function (event) {
+            var btn = $(this);
+            btn.button("loading");
+            $.post("${base}/private/plus1fix/news/delete", {ids: ids.toString()}, function (data) {
+                if (data.code == 0) {
+                    datatable.ajax.reload(null,false);
+                } else {
+                    Toast.error(data.msg);
+                }
+                btn.button("reset");
+                dialog.modal("hide");
+            }, "json");
+        });
+    }
+    
+    function recover(id) {
+		$.post("${base}/private/plus1fix/news/recover/"+id, {}, function (data) {
+			if (data.code == 0) {
+				datatable.ajax.reload(null,false);
+            } else {
+                Toast.error(data.msg);
+            }
+		}, "json");
+    }    
+    
+    function show(flag,id) {
+        $.post("${base}/private/plus1fix/news/show/" + id, {flag:flag}, function (data) {
+            if (data.code == 0) {
+            	datatable.ajax.reload(null,false);
+            } else {
+                Toast.error(data.msg);
+            }
+        }, "json");
+    }
+    
+    function recommend(flag,id) {
+        $.post("${base}/private/plus1fix/news/recommend/" + id, {flag:flag}, function (data) {
+            if (data.code == 0) {
+            	datatable.ajax.reload(null,false);
+            } else {
+                Toast.error(data.msg);
+            }
+        }, "json");
+    }
+    
+    function hot(flag,id) {
+        $.post("${base}/private/plus1fix/news/hot/" + id, {flag:flag}, function (data) {
+            if (data.code == 0) {
+            	datatable.ajax.reload(null,false);
+            } else {
+                Toast.error(data.msg);
+            }
+        }, "json");
+    }
+    
+    $(document).ready(function () {
+        initDatatable();
+        $("#flag").find("option[value='${flag!}']").attr("selected",true);
+        $("#flag").on("change",function(){
+        	$("#_reload").attr("href","${base}/private/plus1fix/news/index/"+$(this).val());
+            $("#_reload").trigger("click");
+        });
+        $("#dialogDetail").on("hidden.bs.modal", function () {
+            $(this).removeData("bs.modal");
+        });
+    });
+</script>
+
+<%}%>

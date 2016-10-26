@@ -1,0 +1,96 @@
+<%
+layout("/layouts/private.html"){
+%>
+<header class="header navbar bg-white shadow">
+    <div class="btn-group tool-button">
+        <a class="btn btn-primary navbar-btn" href="${base}/private/plus1fix/phonebrand/add" data-pjax><i class="ti-plus"></i>新建品牌</a>
+    </div>
+</header>
+<div class=panel-body style="padding-top: 55px;">
+    <div class="table-responsive no-border">
+        <input id="unitid" type="hidden">
+        <table class="table table-bordered table-striped mg-t datatable">
+            <thead>
+            <tr>
+            	<th>名称</th>
+                <th>位置</th>
+                <th>创建时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% for(o in obj){
+            %>
+            <tr>
+                <td>
+                    <span class="pd-l-sm"></span>${o.name!}
+                </td>
+                <td>${o.showIndex!}</td>
+                <td>${@date.getDate(o.createTime/1000)}</td>
+                <td>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                            <i class="ti-settings"></i>
+                            <span class="ti-angle-down"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="${base}/private/plus1fix/phonebrand/edit/${o.id}" data-pjax>修改</a></li>
+                            <li><a href="javascript:;" onclick="del('${o.id!}')">删除</a></li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <%
+            }%>
+            </tbody>
+        </table>
+    </div>
+</div>
+<a class="exit-offscreen"></a>
+<!-- 删除 -->
+<div id="dialogDelete" class="modal fade bs-modal-sm" tabindex="-2" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">删除品牌</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        删除后无法恢复，请谨慎操作！
+                        <br/>确定要删除吗？
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                <button id="ok" type="button" class="btn btn-primary" data-loading-text="正在删除...">确 定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function del(id){
+        var dialog = $("#dialogDelete");
+        dialog.modal("show");
+        dialog.find("#ok").unbind("click");
+        dialog.find("#ok").bind("click", function(event){
+            var btn = $(this);
+            btn.button("loading");
+            $.post("${base}/private/plus1fix/phonebrand/delete/"+id,{},function(data){
+                //重置按钮状态，关闭提示框
+                dialog.modal("hide");
+                if(data.code==0){
+                    Toast.success(data.msg);
+                    window.location.reload();
+                }else{
+                    Toast.error(data.msg);
+                }
+                btn.button("reset");
+            },"json");
+        });
+    }
+</script>
+
+<%}%>

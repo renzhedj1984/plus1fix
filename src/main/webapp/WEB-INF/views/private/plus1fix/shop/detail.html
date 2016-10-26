@@ -1,0 +1,36 @@
+<div class="modal-body no-p">
+    <div class="row">
+        <div class="col-xs-12">
+            <section class="panel panel-primary no-b">
+                <header class="panel-heading clearfix brtl brtr">
+                    <div class="overflow-hidden">
+                        <a href="javascript:;" class="h4 show no-m pt5">${obj.account!}</a>
+                    </div>
+                </header>
+                <div class="list-group">
+                	<a href="javascript:;" class="list-group-item" title="店铺">
+                        <i class="ti-home mr10 text-muted"></i>${obj.companyName!}
+                    </a>
+                    <a href="javascript:;" class="list-group-item" title="联系人">
+                        <i class="ti-user mr10 text-muted"></i>${obj.contactPerson!}
+                    </a>
+                    <a href="javascript:;" class="list-group-item" title="手机">
+                        <i class="ti-mobile mr10 text-muted"></i>${obj.phone!}
+                    </a>
+                    <a href="javascript:;" class="list-group-item" title="邮箱">
+                        <i class="ti-email mr10 text-muted"></i>${obj.email!}
+                    </a>
+                    <a href="javascript:;" class="list-group-item" title="创建时间">
+                        <i class="ti-timer mr10 text-muted"></i>${@date.getDate(obj.createTime/1000)}
+                    </a>
+                    <a href="javascript:;" class="list-group-item" title="地址">
+                        <i class="ti-location-arrow mr10 text-muted"></i>${obj.address!}
+                    </a>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary btn-block" data-dismiss="modal">返回</button>
+</div>
